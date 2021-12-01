@@ -26,6 +26,6 @@ if __name__ == '__main__':
             if msg.find('Left') != -1:
                 filename = "screenshot_" + str(screenshotIdx) + ".jpg"
                 screenshotIdx += 1
+                #you should use your screen capture application here
                 subprocess.Popen(["/home/arcs/gnome-screenshot/_build/src/gnome-screenshot", "-p", "-f", filename])
     p.wait()
-        

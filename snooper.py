@@ -78,6 +78,8 @@ def getKeyInput(log):
     return retval
 
 def processKeyboardInput(keyInput):
+    # keyboard input comes twice per one press.
+    # So it counts each press and raises only when the count is even.
     if (keyInput in processKeyboardInput.counter) == False:
         processKeyboardInput.counter[keyInput] = 1
     else:
@@ -109,8 +111,6 @@ if __name__ == '__main__':
 
     (keyboardInputLog, mouseClickLog) = initBpfArray(
         keyboardSnooper, mouseClickSnooper)
-
-    print(getKeyInput(keyboardInputLog))
 
     print("Start snooping", flush=True)
 
